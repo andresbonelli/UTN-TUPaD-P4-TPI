@@ -6,15 +6,15 @@ Aplicación web full-stack para gestión de catálogo de comidas, carrito de com
 
 ## Repositorio y demostración
 
-- **URL del repositorio:** `<URL_DEL_REPOSITORIO_GITHUB>`
-- **Video de demostración:** `<URL_PUBLICA_DEL_VIDEO>`
+- **Link al repositorio:** `https://github.com/andresbonelli/UTN-TUPaD-P4-TPI`
+- **Link al video:** `<URL_PUBLICA_DEL_VIDEO>`
 
 ## Requisitos previos
 
-- **Python:** 3.11 a 3.13 (probado con Python 3.12)
-- **PostgreSQL:** 15 o superior corriendo localmente en el puerto `5432`
-- **Node.js:** 20.19 o superior
-- **pnpm:** 9 o superior
+- **Python:** 3.12+
+- **PostgreSQL:** 15+
+- **Node.js:** 22+
+- **pnpm:** 9+
 
 ## Estructura del proyecto
 
@@ -51,13 +51,13 @@ TPI/
    ```
 
    Variables en `backend/.env`:
-   - `DATABASE_URL`: cadena de conexión PostgreSQL (`postgresql://postgres:postgres@localhost:5432/foodstore_db`).
-   - `SECRET_KEY`: clave para firmar los JWT (mínimo 32 caracteres).
+   - `DATABASE_URL`: conexión PostgreSQL (`postgresql://postgres:postgres@localhost:5432/foodstore_db`).
+   - `SECRET_KEY`: clave secreta para firmar los JWT (mínimo 32 caracteres).
    - `ALGORITHM`: algoritmo JWT (`HS256`).
-   - `ACCESS_TOKEN_EXPIRE_MINUTES`: expiración del token y la cookie HttpOnly (`30`).
+   - `ACCESS_TOKEN_EXPIRE_MINUTES`: expiración del token y cookie HttpOnly (`30`).
    - `FRONTEND_ORIGIN`: origen permitido por CORS con credenciales (`http://localhost:5173`).
 
-4. Ejecutar el seed inicial idempotente (crea las tablas, usuarios de prueba, categorías y productos con stock):
+4. Ejecutar el seed inicial (crea las tablas, usuarios de prueba, categorías y productos con stock):
 
    ```bash
    python -m app.db.seed
@@ -72,8 +72,6 @@ TPI/
    ```bash
    uvicorn app.main:app --reload
    ```
-
-   La API queda disponible en `http://localhost:8000/api/v1` y la documentación interactiva en `http://localhost:8000/docs` y `http://localhost:8000/redoc`.
 
 ---
 
@@ -92,10 +90,10 @@ TPI/
    cp .env.example .env
    ```
 
-   Variable en `frontend/.env`:
+   `frontend/.env`:
    - `VITE_API_URL=http://localhost:8000/api/v1`
 
-3. Verificar compilación de tipos y build de producción:
+3. (Opcional) Verificar compilación y build:
 
    ```bash
    pnpm build
@@ -106,5 +104,3 @@ TPI/
    ```bash
    pnpm dev
    ```
-
-   La aplicación estará disponible en `http://localhost:5173`.
