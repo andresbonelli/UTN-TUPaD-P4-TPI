@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCambiarEstadoPedido, usePedidos } from '../hooks/usePedidos'
 import type { EstadoPedido, Pedido } from '../types/pedido'
 import { PedidoDetalleModal } from '../components/PedidoDetalleModal'
@@ -7,10 +7,13 @@ import { EstadoError } from '../../../shared/components/EstadoError'
 import { EstadoVacio } from '../../../shared/components/EstadoVacio'
 import { Paginacion } from '../../../shared/components/Paginacion'
 import { Skeleton } from '../../../shared/components/Skeleton'
+import { Button } from '../../../shared/ui/Button'
+import { useAuthStore } from '../../../store/authStore'
 
 const PAGE_LIMIT = 15
 
 export function AdminPedidosPage() {
+  const usuario = useAuthStore((s) => s.usuario)
   const [page, setPage] = useState(0)
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoPedido | undefined>(
     undefined,
@@ -21,12 +24,18 @@ export function AdminPedidosPage() {
     text: string
   } | null>(null)
 
-  const { data, isLoading, isError, error, refetch } = usePedidos({
+  const { data, isLoading, isError, error, refetch, isFetching } = usePedidos({
     skip: page * PAGE_LIMIT,
     limit: PAGE_LIMIT,
     estado: estadoFiltro,
   })
   const cambiarEstadoMutation = useCambiarEstadoPedido()
+
+  useEffect(() => {
+    if (usuario) {
+      void refetch()
+    }
+  }, [usuario, refetch])
 
   const handleCambiarEstado = async (
     pedido: Pedido,
@@ -73,21 +82,34 @@ export function AdminPedidosPage() {
           </p>
         </div>
 
-        <select
-          value={estadoFiltro ?? ''}
-          onChange={(e) => {
-            const val = e.target.value
-            setEstadoFiltro(val ? (val as EstadoPedido) : undefined)
-            setPage(0)
-          }}
-          className="px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-500"
-        >
-          <option value="">Todos los estados</option>
-          <option value="PENDIENTE">Pendiente</option>
-          <option value="EN_PREPARACION">En preparación</option>
-          <option value="ENTREGADO">Entregado</option>
-          <option value="CANCELADO">Cancelado</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            loading={isFetching}
+            title="Refrescar lista de pedidos"
+          >
+            ↻ Refrescar
+          </Button>
+
+          <select
+            value={estadoFiltro ?? ''}
+            onChange={(e) => {
+              const val = e.target.value
+              setEstadoFiltro(val ? (val as EstadoPedido) : undefined)
+              setPage(0)
+            }}
+            className="px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-500"
+          >
+            <option value="">Todos los estados</option>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="EN_PREPARACION">En preparación</option>
+            <option value="ENTREGADO">Entregado</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+        </div>
       </div>
 
       {feedback && (

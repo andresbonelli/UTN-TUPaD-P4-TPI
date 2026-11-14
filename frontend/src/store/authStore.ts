@@ -8,6 +8,8 @@ import {
 } from '../features/auth/api/auth'
 import type { RegisterPayload, UserPublic } from '../features/auth/types/auth'
 import { setUnauthorizedHandler } from '../shared/api/axiosInstance'
+import { queryClient } from '../shared/api/queryClient'
+import { useCartStore } from './cartStore'
 
 interface AuthState {
   usuario: UserPublic | null
@@ -25,7 +27,10 @@ export const useAuthStore = create<AuthState>()(
       usuario: null,
       cargando: true,
 
-      clearSession: () => set({ usuario: null, cargando: false }),
+      clearSession: () => {
+        queryClient.clear()
+        set({ usuario: null, cargando: false })
+      },
 
       checkSession: async () => {
         set({ cargando: true })
@@ -33,6 +38,7 @@ export const useAuthStore = create<AuthState>()(
           const usuario = await getMeRequest()
           set({ usuario, cargando: false })
         } catch {
+          queryClient.clear()
           set({ usuario: null, cargando: false })
         }
       },
@@ -42,9 +48,12 @@ export const useAuthStore = create<AuthState>()(
         try {
           await loginRequest(username, password)
           const usuario = await getMeRequest()
+          // Limpiamos la caché de TanStack Query para que no queden datos de otra sesión
+          queryClient.clear()
           set({ usuario, cargando: false })
           return usuario
         } catch (error) {
+          queryClient.clear()
           set({ usuario: null, cargando: false })
           throw error
         }
@@ -67,6 +76,9 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           // Limpiamos sesión local incluso si la petición de logout falla
         }
+        // Limpiamos caché del servidor y carrito de compras al cerrar sesión
+        queryClient.clear()
+        useCartStore.getState().vaciar()
         set({ usuario: null, cargando: false })
       },
     }),

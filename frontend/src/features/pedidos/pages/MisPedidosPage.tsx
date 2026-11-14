@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCancelarPedido, usePedidos } from '../hooks/usePedidos'
 import type { EstadoPedido, Pedido } from '../types/pedido'
@@ -11,10 +11,12 @@ import { BadgeEstado } from '../../../shared/ui/BadgeEstado'
 import { Button } from '../../../shared/ui/Button'
 import { Card } from '../../../shared/ui/Card'
 import { formatCurrency, formatDateTime } from '../../../shared/utils/format'
+import { useAuthStore } from '../../../store/authStore'
 
 const PAGE_LIMIT = 10
 
 export function MisPedidosPage() {
+  const usuario = useAuthStore((s) => s.usuario)
   const [page, setPage] = useState(0)
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoPedido | undefined>(
     undefined,
@@ -25,12 +27,19 @@ export function MisPedidosPage() {
     text: string
   } | null>(null)
 
-  const { data, isLoading, isError, error, refetch } = usePedidos({
+  const { data, isLoading, isError, error, refetch, isFetching } = usePedidos({
     skip: page * PAGE_LIMIT,
     limit: PAGE_LIMIT,
     estado: estadoFiltro,
   })
   const cancelarMutation = useCancelarPedido()
+
+  // Refetch garantizado al montar la vista o cuando cambia el usuario activo
+  useEffect(() => {
+    if (usuario) {
+      void refetch()
+    }
+  }, [usuario, refetch])
 
   const handleCancelar = async (pedido: Pedido) => {
     const confirmed = window.confirm(
@@ -67,21 +76,34 @@ export function MisPedidosPage() {
           </p>
         </div>
 
-        <select
-          value={estadoFiltro ?? ''}
-          onChange={(e) => {
-            const val = e.target.value
-            setEstadoFiltro(val ? (val as EstadoPedido) : undefined)
-            setPage(0)
-          }}
-          className="px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-500"
-        >
-          <option value="">Todos los estados</option>
-          <option value="PENDIENTE">Pendiente</option>
-          <option value="EN_PREPARACION">En preparación</option>
-          <option value="ENTREGADO">Entregado</option>
-          <option value="CANCELADO">Cancelado</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            loading={isFetching}
+            title="Refrescar lista de pedidos"
+          >
+            ↻ Refrescar
+          </Button>
+
+          <select
+            value={estadoFiltro ?? ''}
+            onChange={(e) => {
+              const val = e.target.value
+              setEstadoFiltro(val ? (val as EstadoPedido) : undefined)
+              setPage(0)
+            }}
+            className="px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-500"
+          >
+            <option value="">Todos los estados</option>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="EN_PREPARACION">En preparación</option>
+            <option value="ENTREGADO">Entregado</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+        </div>
       </div>
 
       {feedback && (

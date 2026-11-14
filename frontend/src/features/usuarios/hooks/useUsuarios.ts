@@ -4,13 +4,19 @@ import {
   desactivarUsuario,
   getUsuarios,
 } from '../api/usuarios'
+import { useAuthStore } from '../../../store/authStore'
 
 export const USUARIOS_KEY = ['admin', 'usuarios'] as const
 
 export function useUsuarios() {
+  const usuario = useAuthStore((s) => s.usuario)
+
   return useQuery({
-    queryKey: USUARIOS_KEY,
+    queryKey: [...USUARIOS_KEY, usuario?.id ?? 0],
     queryFn: getUsuarios,
+    enabled: usuario?.role === 'admin',
+    staleTime: 0,
+    refetchOnMount: 'always',
   })
 }
 
