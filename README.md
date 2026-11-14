@@ -1,10 +1,10 @@
-# Food Store — Sistema de Pedidos de Comida
+# Food Store
 
-Trabajo Práctico Integrador de **Programación 4** (UTN — Tecnicatura Universitaria en Programación a Distancia).
+**Programación 4** Trabajo Práctico Integrador (UTN — Tecnicatura Universitaria en Programación a Distancia).
 
 Aplicación web full-stack para gestión de catálogo de comidas, carrito de compras, pedidos transaccionales y panel de administración.
 
-## Repositorio y demostración
+## Repositorio y demo
 
 - **Link al repositorio:** `https://github.com/andresbonelli/UTN-TUPaD-P4-TPI`
 - **Link al video:** `<URL_PUBLICA_DEL_VIDEO>`
