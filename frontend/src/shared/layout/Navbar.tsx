@@ -18,6 +18,7 @@ export function Navbar() {
   const items = useCartStore((s) => s.items)
 
   const totalCantidad = items.reduce((acc, item) => acc + item.cantidad, 0)
+  const isAdmin = usuario?.role === 'admin'
 
   const handleLogout = async () => {
     await logout()
@@ -31,7 +32,7 @@ export function Navbar() {
           {/* Logo y links principales */}
           <div className="flex items-center gap-6 flex-wrap">
             <Link
-              to="/"
+              to={isAdmin ? '/admin/resumen' : '/'}
               className="flex items-center gap-2 text-lg font-extrabold tracking-tight text-slate-900"
             >
               <span className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm font-bold">
@@ -41,27 +42,8 @@ export function Navbar() {
             </Link>
 
             <nav className="flex items-center gap-1 flex-wrap">
-              <NavLink to="/" end className={navLinkClass}>
-                Catálogo
-              </NavLink>
-              <NavLink to="/carrito" className={navLinkClass}>
-                <span className="inline-flex items-center gap-1.5">
-                  Carrito
-                  {totalCantidad > 0 && (
-                    <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full bg-blue-600 text-white">
-                      {totalCantidad}
-                    </span>
-                  )}
-                </span>
-              </NavLink>
-              {usuario && (
-                <NavLink to="/mis-pedidos" className={navLinkClass}>
-                  Mis pedidos
-                </NavLink>
-              )}
-              {usuario?.role === 'admin' && (
+              {isAdmin ? (
                 <>
-                  <span className="h-4 w-px bg-slate-200 mx-1 hidden sm:inline-block" />
                   <NavLink to="/admin/resumen" className={navLinkClass}>
                     Resumen
                   </NavLink>
@@ -77,6 +59,27 @@ export function Navbar() {
                   <NavLink to="/admin/usuarios" className={navLinkClass}>
                     Usuarios
                   </NavLink>
+                </>
+              ) : (
+                <>
+                  <NavLink to="/" end className={navLinkClass}>
+                    Catálogo
+                  </NavLink>
+                  <NavLink to="/carrito" className={navLinkClass}>
+                    <span className="inline-flex items-center gap-1.5">
+                      Carrito
+                      {totalCantidad > 0 && (
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full bg-blue-600 text-white">
+                          {totalCantidad}
+                        </span>
+                      )}
+                    </span>
+                  </NavLink>
+                  {usuario && (
+                    <NavLink to="/mis-pedidos" className={navLinkClass}>
+                      Mis pedidos
+                    </NavLink>
+                  )}
                 </>
               )}
             </nav>

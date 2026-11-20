@@ -13,21 +13,43 @@ import { CheckoutPage } from '../features/pedidos/pages/CheckoutPage'
 import { MisPedidosPage } from '../features/pedidos/pages/MisPedidosPage'
 import { AdminPedidosPage } from '../features/pedidos/pages/AdminPedidosPage'
 import { AdminResumenPage } from '../features/pedidos/pages/AdminResumenPage'
+import { useAuthStore } from '../store/authStore'
 
 export function AppRouter() {
+  const usuario = useAuthStore((s) => s.usuario)
+  const isAdmin = usuario?.role === 'admin'
+
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          {/* Rutas públicas */}
-          <Route path="/" element={<CatalogoPage />} />
+          {/* Rutas públicas / cliente */}
+          <Route
+            path="/"
+            element={
+              isAdmin ? (
+                <Navigate to="/admin/resumen" replace />
+              ) : (
+                <CatalogoPage />
+              )
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/carrito" element={<CarritoPage />} />
+          <Route
+            path="/carrito"
+            element={
+              isAdmin ? (
+                <Navigate to="/admin/resumen" replace />
+              ) : (
+                <CarritoPage />
+              )
+            }
+          />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-          {/* Rutas con sesión iniciada */}
-          <Route element={<ProtectedRoute />}>
+          {/* Rutas exclusivas para clientes con sesión iniciada */}
+          <Route element={<ProtectedRoute allowedRoles={['user']} />}>
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/mis-pedidos" element={<MisPedidosPage />} />
           </Route>
@@ -41,7 +63,10 @@ export function AppRouter() {
             <Route path="/admin/usuarios" element={<AdminUsuariosPage />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route
+            path="*"
+            element={<Navigate to={isAdmin ? '/admin/resumen' : '/'} replace />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Card } from '../../../shared/ui/Card'
+import { useAuthStore } from '../../../store/authStore'
 
 export function UnauthorizedPage() {
+  const usuario = useAuthStore((s) => s.usuario)
+  const homePath = usuario?.role === 'admin' ? '/admin/resumen' : '/'
+
   return (
     <div className="max-w-lg mx-auto mt-12">
       <Card className="p-8 text-center">
@@ -21,7 +25,7 @@ export function UnauthorizedPage() {
         </p>
         <div className="mt-6">
           <Link
-            to="/"
+            to={homePath}
             className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors"
           >
             Volver al inicio

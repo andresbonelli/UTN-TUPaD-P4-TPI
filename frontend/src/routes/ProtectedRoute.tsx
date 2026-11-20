@@ -29,6 +29,9 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   }
 
   if (allowedRoles && !allowedRoles.includes(usuario.role)) {
+    if (usuario.role === 'admin') {
+      return <Navigate to="/admin/resumen" replace />
+    }
     return <Navigate to="/unauthorized" replace />
   }
 
