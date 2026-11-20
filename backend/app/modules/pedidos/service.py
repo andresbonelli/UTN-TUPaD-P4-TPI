@@ -92,7 +92,7 @@ class PedidoService:
 
                 if producto.stock < item.cantidad:
                     raise StockInsuficiente(
-                        f"Stock insuficiente para '{producto.nombre}' "
+                        f"¡Lo sentimos! El producto '{producto.nombre}' no tiene stock suficiente."
                         f"(disponible: {producto.stock}, solicitado: {item.cantidad})"
                     )
 
