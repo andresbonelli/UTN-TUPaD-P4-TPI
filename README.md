@@ -7,7 +7,7 @@ Aplicación web full-stack para gestión de catálogo de comidas, carrito de com
 ## Repositorio y demo
 
 - **Link al repositorio:** `https://github.com/andresbonelli/UTN-TUPaD-P4-TPI`
-- **Link al video:** `<URL_PUBLICA_DEL_VIDEO>`
+- **Link al video:** `https://youtu.be/NwA_Hc4k0FM`
 
 ## Requisitos previos
 
